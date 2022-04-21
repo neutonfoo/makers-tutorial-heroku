@@ -1,3 +1,4 @@
+import json
 import os
 from flask import Flask, request
 import requests
@@ -43,6 +44,43 @@ def people():
 
     return person_json
 
+# If a GET request is made
+@application.route("/getComments", methods=["GET"])
+def get_comments():
+    f = open("comments.json", "r")
+    comments = json.load(f)
+    f.close()
+
+    return comments
+
+
+# If a POST request is made
+@application.route("/addComments", methods=["POST"])
+def add_comment():
+    name = request.form.get("name")
+    flavor = request.form.get("flavor")
+    comment = request.form.get("comment")
+
+    comment_to_append = {
+        "name": name,
+        "flavor": flavor,
+        "comment": comment
+    }
+
+    f = open("comments.json", "r")
+    comments = json.load(f)
+    f.close()
+
+    print(comments)
+
+    comments['comments'].append(comment_to_append)
+
+    f = open("comments.json", "w")
+    f.write(json.dumps(comments))
+    f.close()
+
+
+    return comment_to_append
 
 if __name__ == "__main__":
     application.run()
